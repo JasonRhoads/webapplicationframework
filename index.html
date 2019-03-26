@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Get/Post Request</title>
+    <link href="styles/normalize.css" rel="stylesheet">
+    <link href="styles/main.css" rel="stylesheet">
+  </head>
+  <body>
+    <header>
+      <h1>Only One May Enter Here. A Diamond In The Rough!</h1>
+      <img id="mainimage-success" src="images/Genie_Aladdin.png">
+    </header>
+    <main>
+      <form action="http://localhost:9292" method="post">
+        <label for="username">Who Enters: <input type="text" name ="username" id="username"></label>
+        <br>
+        <label for="password" style="margin-left: 15px">Password: <input type="text" name="password" id="password"></label>
+        <br>
+        <button id="btnsubmit" type="submit" style="margin-left: 125px">Submit</button>
+      </form>
+      <img id="mainimage-failure" src="images/cave_of_wonders.jpg">
+    </main>
+  </body>
