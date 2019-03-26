@@ -4,14 +4,14 @@ class MyApp
   def call env
     req = Rack::Request.new(env)
     root = File.expand_path(File.dirname(__FILE__))
-    index_file = root + "/index.html"
-    success_file = root + "/success.html"
-    failed_file = root + "/failed.html"
-    doesnotexist_file = root + "/doesnotexist.html"
+    index_file = root + "/public/index.html"
+    success_file = root + "/public/success.html"
+    failed_file = root + "/public/failed.html"
+    doesnotexist_file = root + "/public/doesnotexist.html"
 
-    main_css = root + "/styles/main.css"
-    success_css = root + "/styles/success.css"
-    failed_css = root + "/styles/failed.css"
+    main_css = root + "/public/css/main.css"
+    success_css = root + "/public/css/success.css"
+    failed_css = root + "/public/css/failed.css"
     
     
     if req.get?
