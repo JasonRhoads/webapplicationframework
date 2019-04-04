@@ -22,38 +22,37 @@ class MyApp
       # Does the requested file exist? If not return 404
       # e.g. /foo/bar.css -> C:\MyDir\public\foo\bar.css
       file = root + req.path
-
+      puts file
+      #change '/' to append index.html to directory
+      file += "/index.html" if File.directory?(file)
       # What is the extension of the file? 
-      content = ""
-      case File.extname(file)
+      content = case File.extname(file)
       # * if .css, return Content-Type text/css
       when ".css"
-        content = "text/css"
+        "text/css"
       # * if .html, return content-type text/html
       when ".html"
-        content = "text/html"
+        "text/html"
       # * if .js, return content-type application/javascript
       when ".js"
-        content = "application/javascript"
+        "application/javascript"
       # * if .png, return image contents and content-type image/png
       when ".png"
-        content = "image/png"
+        "image/png"
       when ".jpg"
-        content = "image/jpg"
+        "image/jpg"
       # * if other, use content-type text/plain
       else
-        content = "text/plain"
+        "text/plain"
       end
-      if req.path == '/'
-        [200, {"Content-type" => "text/html"}, File.read(index_file)]
-      elsif File.exist?(file)
-        [200, {"Content-type" => "#{content}"}, [File.read(file), req.path]] 
+               
+      if File.exist?(file)
+        [200, {"Content-type" => "#{content}"}, [File.read(file, mode: "rb")]] 
       else
-        [404, {"Content-type" => "text/html"}, [File.read(doesnotexist_file)]]
+        [404, {"Content-type" => "text/html"}, [File.read(doesnotexist_file), req.path]]
       end    
       # Examples
       # browser requests /index.html, server sets content to text/html nd returns root + "/index.html" contents
-   
       #return [200, {"Content-type" => "#{content}"}, [File.read(index_file), File.read(main_css)]] if req.path == "/"
       
     elsif req.post?
