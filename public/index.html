@@ -3,23 +3,23 @@
   <head>
     <meta charset="UTF-8">
     <title>Get/Post Request</title>
-    <link href="styles/normalize.css" rel="stylesheet">
-    <link href="/public/css/main.css" rel="stylesheet">
+    <link href="/css/main.css" rel="stylesheet">
   </head>
   <body>
     <header>
       <h1>Only One May Enter Here. A Diamond In The Rough!</h1>
-      <img id="mainimage-success" src="/public/images/Genie_Aladdin.png">
+      <img id="mainimage-success" src="/images/Genie_Aladdin.png" alt="Genie of the Lamp">
     </header>
     <main>
-      <form action="http://localhost:9292" method="post">
-        <label for="username">Who Enters: <input type="text" name ="username" id="username"></label>
+      <form name="login" action="/login" method="post">
+        <label for="username">Who Enters: <input type="text" name="username" id="username"></label>
         <br>
         <label for="password" style="margin-left: 15px">Password: <input type="text" name="password" id="password"></label>
         <br>
-        <button id="btnsubmit" type="submit" style="margin-left: 125px">Submit</button>
+        <input id="btnsubmit" type="submit" style="margin-left: 125px" />
       </form>
-      <img id="mainimage-failure" src="/public/images/cave_of_wonders.jpg">
+      <img class="mainimage-failure" src="/images/cave_of_wonders.jpg" alt="cave of wonders">
     </main>
+    <script type="text/javascript" src="/js/app.js"></script>
   </body>
 </html>
