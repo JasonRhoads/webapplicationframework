@@ -23,25 +23,26 @@ class MyApp
     content = mime_types[File.extname(file)]
     
     routes = {
-      "POST /login" => Proc.new{ |req, root, mime_types| post_request_dispatcher(req, root, mime_types) },
-      "GET /me" => Proc.new{ |req, root, mime_types| get_request_dispatcher(req, root, mime_types) },
+      "POST /login" => "login#login",
+      "GET /me" => "me_test#me",
     }
-    routes.default = Proc.new {|req, root, mime_types| request_dispatcher(req, root, mime_types)}
-
+    
     wanted = "#{req.request_method} #{req.path.downcase}"
-    routes[wanted].call(req, root, mime_types)
- 
+    if routes.has_key? wanted
+      dynamic_request_dispatcher(routes[wanted], req, root, mime_types)
+    else
+      get_request_dispatcher(req, root, mime_types)
+    end
   end
 
-  def request_dispatcher(req, root, mime_types)
-      case req.request_method
-      when "GET"
-        get_request_dispatcher(req, root, mime_types)
-      when "POST"
-        post_request_dispatcher(req, root, mime_types)
-      else
-        [404, {"Content-type" => "text/html"}, [File.read("#{root}/doesnotexist.html")]]
-      end
+  def dynamic_request_dispatcher(controller_file_name, req, root, mime_types)
+    klass = controller_file_name.gsub(/[A-Za-z0-9]*\//, "").sub(/#[A-Za-z0-9]*/, "").split('_').map{|e| e.capitalize}.join
+    file_name = controller_file_name.sub(/#[A-Za-z0-9]*/, "") + ".rb"
+    meth = controller_file_name.gsub(/[A-Za-z0-9]*\//, "").gsub(/[A-Za-z0-9]*_/, "").gsub(/[A-Za-z0-9]*#/, "")
+    load "#{root}/../controllers/#{file_name}"
+    instance = Object.const_get(klass).new
+    execute = instance.method(meth)
+    execute.call(req, root, mime_types)
   end
 
   def get_request_dispatcher(req, root, mime_types)
@@ -49,20 +50,8 @@ class MyApp
     file += "/index.html" if File.directory?(file)
     if File.exist?(file)
         [200, {"Content-type" => "#{mime_types[File.extname(file)]}"}, [File.read(file, mode: "rb")]] 
-      #elsif req.path == "/loogin" || req.path == "/loggin" || req.path == "/lgin"
-      #  [301, {"Location" => "/index.html"},[]]
     else
         [404, {"Content-type" => "text/html"}, [File.read("#{root}/doesnotexist.html")]]
-    end
-  end
-
-  def post_request_dispatcher(req, root, mime_types)
-    username = req.params["username"]
-    password = req.params["password"]
-    if ((username == "aladdin") && (password == "letmein"))
-      [200, {"Content-type" => "text/html"}, [File.read("#{root}/success.html")]]  
-    else
-      [200, {"Content-type" => "text/html"}, [File.read("#{root}/failed.html")]]  
     end
   end
 
