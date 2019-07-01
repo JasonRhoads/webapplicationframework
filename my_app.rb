@@ -3,7 +3,7 @@ require 'logger'
 
 class MyApp
   def call env
-    req = Rack::Request.new(env)
+    request = Rack::Request.new(env)
     logger = Logger.new(STDOUT)
     logger.level = Logger::WARN 
     mime_types = {
@@ -18,7 +18,7 @@ class MyApp
   
     root = File.expand_path(File.dirname(__FILE__)) + "/public"
         
-    file = root + req.path
+    file = root + request.path
     file += "/index.html" if File.directory?(file)
     content = mime_types[File.extname(file)]
     
@@ -27,26 +27,26 @@ class MyApp
       "GET /me" => "me_test#me",
     }
     
-    wanted = "#{req.request_method} #{req.path.downcase}"
+    wanted = "#{request.request_method} #{request.path.downcase}"
     if routes.has_key? wanted
-      dynamic_request_dispatcher(routes[wanted], req, root, mime_types)
+      dynamic_request_dispatcher(routes[wanted], request, root, mime_types)
     else
-      get_request_dispatcher(req, root, mime_types)
+      get_request_dispatcher(request, root, mime_types)
     end
   end
 
-  def dynamic_request_dispatcher(controller_file_name, req, root, mime_types)
-    klass = controller_file_name.gsub(/[A-Za-z0-9]*\//, "").sub(/#[A-Za-z0-9]*/, "").split('_').map{|e| e.capitalize}.join
-    file_name = controller_file_name.sub(/#[A-Za-z0-9]*/, "") + ".rb"
-    meth = controller_file_name.gsub(/[A-Za-z0-9]*\//, "").gsub(/[A-Za-z0-9]*_/, "").gsub(/[A-Za-z0-9]*#/, "")
+  def dynamic_request_dispatcher(controller_file_name, request, root, mime_types)
+    *path_names, class_name, method_name = controller_file_name.scan(/(\w+\/|\w+)/).flatten
+    file_name = [path_names, class_name, ".rb"].flatten.join
+    class_name = class_name.split('_').map{|cn| cn.capitalize}.join
     load "#{root}/../controllers/#{file_name}"
-    instance = Object.const_get(klass).new
-    execute = instance.method(meth)
-    execute.call(req, root, mime_types)
+    instance = Object.const_get(class_name).new
+    instance_method = instance.method(method_name)
+    instance_method.call(request, root, mime_types)
   end
 
-  def get_request_dispatcher(req, root, mime_types)
-    file = root + req.path
+  def get_request_dispatcher(request, root, mime_types)
+    file = root + request.path
     file += "/index.html" if File.directory?(file)
     if File.exist?(file)
         [200, {"Content-type" => "#{mime_types[File.extname(file)]}"}, [File.read(file, mode: "rb")]] 

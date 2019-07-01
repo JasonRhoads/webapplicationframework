@@ -1,5 +1,5 @@
 class MeTest
-  def me(req, root, mime_types)
+  def me(request, root, mime_types)
     success = File.read("#{root}/header.txt") + "    
         <main>
         <h1>Mr. Alladin Sir What Will You're Pleasure Be!</h1>

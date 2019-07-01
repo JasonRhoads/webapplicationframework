@@ -1,5 +1,5 @@
 class Login
-  def login(req, root, mime_types)
+  def login(request, root, mime_types)
     database = {
       "aladdin" => "letmein",
       "jason" => "ohyeah",
@@ -7,12 +7,12 @@ class Login
       "admin" => "password",
     }
     
-    username = req.params["username"]
-    password = req.params["password"]
+    username = request.params["username"]
+    password = request.params["password"]
     if ((database.key?(username)) && (password == database[username]))
       [200, {"Content-type" => "text/html"}, [File.read("#{root}/success.html")]]  
     else
-      [200, {"Content-type" => "text/html"}, [File.read("#{root}/failed.html")]]  
+      [401, {"Content-type" => "text/html"}, [File.read("#{root}/failed.html")]]  
     end
   end
 end
