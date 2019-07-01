@@ -1,5 +1,5 @@
-require 'rack'
-require 'logger'
+require "rack"
+require "logger"
 
 class MyApp
   def call env
