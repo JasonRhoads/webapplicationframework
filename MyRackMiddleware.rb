@@ -3,7 +3,7 @@ class MyRackMiddleware
     @appl = appl
   end
 
-  def call(env)
+  def call env
     status, headers, body = @appl.call(env)
     #append_s = "... greetings from RubyLearning!!"
     #new_body = ""
