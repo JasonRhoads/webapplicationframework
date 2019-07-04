@@ -10,9 +10,9 @@ class Login
     username = request.params["username"]
     password = request.params["password"]
     if ((database.key?(username)) && (password == database[username]))
-      [200, {"Content-type" => "text/html"}, [File.read("#{root}/success.html")]]  
+      [200, {"Content-type" => "text/html", "class_name" => "Login", "method_name" => "login"}, [File.read("#{root}/success.html")]]  
     else
-      [401, {"Content-type" => "text/html"}, [File.read("#{root}/failed.html")]]  
+      [401, {"Content-type" => "text/html", "class_name" => "Login", "method_name" => "login"}, [File.read("#{root}/failed.html")]]  
     end
   end
 end
