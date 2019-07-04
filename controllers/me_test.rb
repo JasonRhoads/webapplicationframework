@@ -7,6 +7,6 @@ class MeTest
         </main>
       </body> 
     </html>"
-    [200, {"Content-type" => "text/html"}, [success]]
+    [200, {"Content-type" => "text/html", "class_name" => "MeTest", "method_name" => "me"}, [success]]
   end  
 end
