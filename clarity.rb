@@ -1,13 +1,12 @@
 require "rack"
 require "logger"
-require "net/http"
-require "uri"
 
 class Clarity
   def call env
     request = Rack::Request.new(env)
+    response = Rack::Response.new(env)
     logger = Logger.new(STDOUT)
-    logger.level = Logger::WARN 
+    logger.level = Logger::WARN
     mime_types = {
       ".css"  => "text/css",
       ".html" => "text/html",
@@ -35,6 +34,10 @@ class Clarity
     else
       get_request_dispatcher(request, root, mime_types)
     end
+
+    
+    logger.debug_logger(response)
+    response.finish
   end
 
   def dynamic_request_dispatcher(controller_file_name, request, root, mime_types)
@@ -44,8 +47,7 @@ class Clarity
     load "#{root}/../controllers/#{file_name}"
     instance = Object.const_get(class_name).new
     instance_method = instance.method(method_name)
-    instance_method.call(request, root, mime_types)
-    response = Net::HTTP.get_response(URI("http://localhost:9292/#{method_name}"))
+    instance_method.call(request, root, mime_types)   
   end
 
   def get_request_dispatcher(request, root, mime_types)
@@ -58,4 +60,14 @@ class Clarity
     end
   end
 
+end
+
+class Logger
+  def debug_logger(response)
+    t = Time.now
+    status = response.status
+    class_name = response.get_header('class_name')
+    method_name = response.get_header('method_name')
+    puts "[#{t.ctime}] #{status}, #{class_name}, #{method_name} "
+  end
 end
