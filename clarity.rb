@@ -1,14 +1,12 @@
 require "rack"
 require "logger"
 
-
 class Clarity
   def call env
     request = Rack::Request.new(env)
-   # response = Rack::Response.new("ahhhh", 201) need help
-    logger = Logger.new(STDOUT)
-    logger.level = Logger::WARN
-   # logger.debug_logger(response)
+    @logger = Logger.new(STDOUT)
+    @logger.level = Logger::DEBUG
+    
     mime_types = {
       ".css"  => "text/css",
       ".html" => "text/html",
@@ -45,8 +43,9 @@ class Clarity
     load "#{root}/../controllers/#{file_name}"
     instance = Object.const_get(class_name).new
     instance_method = instance.method(method_name)
-    instance_method.call(request, root, mime_types)
-    
+    response = instance_method.call(request, root, mime_types)
+    @logger.debug %{class:#{class_name}, method:#{method_name}, status code:#{response[0]}}
+    response
   end
 
   def get_request_dispatcher(request, root, mime_types)
@@ -61,12 +60,4 @@ class Clarity
 
 end
 
-class Logger
-  def debug_logger(response)
-    t = Time.now
-    status = response.status
-    class_name = response.get_header('class_name')
-    method_name = response.get_header('method_name')
-    puts "[#{t.ctime}] #{status}, #{class_name}, #{method_name} "
-  end
-end
+
