@@ -2,8 +2,13 @@ require "rack"
 require "logger"
 
 class Clarity
+  CLARITY_PORT = 3000
+  CLARITY_ADDRESS = 0.0.0.0
+  
   def call env
     request = Rack::Request.new(env)
+    CLARITY_PORT = env['port']
+    CLARITY_ADDRESS = env['listen']
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
     
