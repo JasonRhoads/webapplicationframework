@@ -1,0 +1,10 @@
+Request Processing
+Logging
+  utilize racks logging. other logs should be created by developer
+File Serving
+  camalization of file names.
+Cookies
+Dynamic Route Handling
+  Map incoming HTTP requests to custom business logic handlers created by the developer
+Static File Handling
+  Easily serve static files from the application without code or configuration
