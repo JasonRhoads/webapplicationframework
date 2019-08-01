@@ -6,7 +6,7 @@ class Clarity
     request = Rack::Request.new(env)
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
-    
+
     mime_types = {
       ".css"  => "text/css",
       ".html" => "text/html",
@@ -32,7 +32,7 @@ class Clarity
     if routes.has_key? wanted
       dynamic_request_dispatcher(routes[wanted], request, root, mime_types)
     else
-      get_request_dispatcher(request, root, mime_types)
+      default_request_dispatcher(request, root, mime_types)
     end
   end
 
@@ -48,7 +48,7 @@ class Clarity
     response
   end
 
-  def get_request_dispatcher(request, root, mime_types)
+  def default_request_dispatcher(request, root, mime_types)
     file = root + request.path
     file += "/index.html" if File.directory?(file)
     if File.exist?(file)
