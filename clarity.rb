@@ -26,11 +26,20 @@ class Clarity
     file += "/index.html" if File.directory?(file)
     content = mime_types[File.extname(file)]
     
-    routes = {#file open, read , process each line, key and value
-      "POST /login" => "login#login",
-      "GET /me" => "me_test#me",
-    }
+    mime_types = {}
+    mime_types_file = File.open("#{root}/../mime_types.txt")
+    mime_types_file.each {|line| value, key = line.scan(/(\w*\/\w*):\s*([\W\w*]*)\s*/) 
+                          puts "#{key} => #{value}"
+                         }
+    #puts mime_types
     
+    
+    routes = {}
+    routes_file = File.open("#{root}/../controllers/routes.txt")
+    routes_file.each {|line| key, value = line.scan(/(\w*\s*[\/\w*]*)\s(\w*#\w*)/).flatten 
+                      routes[key]= value}
+    puts routes
+        
     wanted = "#{request.request_method} #{request.path.downcase}"
     if routes.has_key? wanted
       dynamic_request_dispatcher(routes[wanted], request, root, mime_types)
