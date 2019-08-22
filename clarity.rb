@@ -6,24 +6,27 @@ class Clarity
     request = Rack::Request.new(env)
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
+    #move to external file
+    # type: ext1 ext2 ext3
+    # text/html: .htm .html
+    # application/javascript: .js
 
     mime_types = {
       ".css"  => "text/css",
       ".html" => "text/html",
+      ".htm"  => "text/html",
       ".js"   => "application/javascript",
       ".png"  => "image/png",
       ".jpg"  => "image/jpeg",
       ".jpeg" => "image/jpeg",
     }
     mime_types.default = "text/plain"
-  
-    root = File.expand_path(File.dirname(__FILE__)) + "/public"
-        
+    root = ENV['CLARITY_ROOT'] ? ENV['CLARITY_ROOT'] : File.expand_path(File.dirname(__FILE__)) + "/public"    
     file = root + request.path
     file += "/index.html" if File.directory?(file)
     content = mime_types[File.extname(file)]
     
-    routes = {
+    routes = {#file open, read , process each line, key and value
       "POST /login" => "login#login",
       "GET /me" => "me_test#me",
     }
@@ -38,7 +41,7 @@ class Clarity
 
   def dynamic_request_dispatcher(controller_file_name, request, root, mime_types)
     *path_names, class_name, method_name = controller_file_name.scan(/(\w+\/|\w+)/).flatten
-    file_name = [path_names, class_name, ".rb"].flatten.join
+    file_name = [path_names, class_name, ".rb"].flatten.join #if not found search camel file name
     class_name = class_name.split('_').map{|cn| cn.capitalize}.join
     load "#{root}/../controllers/#{file_name}"
     instance = Object.const_get(class_name).new
