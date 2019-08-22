@@ -1,10 +1,13 @@
 Request Processing
-Logging
-  utilize racks logging. other logs should be created by developer
-File Serving
-  camalization of file names.
-Cookies
+  route hash for dynamic routes
 Dynamic Route Handling
   Map incoming HTTP requests to custom business logic handlers created by the developer
+  File camelization
 Static File Handling
   Easily serve static files from the application without code or configuration
+Cookies
+  cookie creation
+Logging
+  utilize racks logging. other logs should be created by developer
+Database Access
+
