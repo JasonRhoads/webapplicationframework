@@ -25,8 +25,9 @@ class Clarity
 
   def dynamic_request_dispatcher(controller_file_name, request, root, mime_types)
     *path_names, class_name, method_name = controller_file_name.scan(/(\w+\/|\w+)/).flatten
-    file_name = [path_names, class_name, ".rb"].flatten.join #if not found search camel file name
+    file_name = [path_names, class_name, ".rb"].flatten.join
     class_name = class_name.split('_').map{|cn| cn.capitalize}.join
+    file_name = [path_names, class_name, ".rb"].flatten.join if File.exist?(file_name) == false
     load "#{root}/../controllers/#{file_name}"
     instance = Object.const_get(class_name).new
     instance_method = instance.method(method_name)
