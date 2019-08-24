@@ -1,2 +1,3 @@
 "POST /login login#login"
 "GET /me me_test#me"
+"GET /me MeTest#me"
