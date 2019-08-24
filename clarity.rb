@@ -6,40 +6,15 @@ class Clarity
     request = Rack::Request.new(env)
     @logger = Logger.new(STDOUT)
     @logger.level = Logger::DEBUG
-    #move to external file
-    # type: ext1 ext2 ext3
-    # text/html: .htm .html
-    # application/javascript: .js
-
-    mime_types = {
-      ".css"  => "text/css",
-      ".html" => "text/html",
-      ".htm"  => "text/html",
-      ".js"   => "application/javascript",
-      ".png"  => "image/png",
-      ".jpg"  => "image/jpeg",
-      ".jpeg" => "image/jpeg",
-    }
-    mime_types.default = "text/plain"
+    
     root = ENV['CLARITY_ROOT'] ? ENV['CLARITY_ROOT'] : File.expand_path(File.dirname(__FILE__)) + "/public"    
     file = root + request.path
     file += "/index.html" if File.directory?(file)
-    content = mime_types[File.extname(file)]
     
-    mime_types = {}
-    mime_types_file = File.open("#{root}/../mime_types.txt")
-    mime_types_file.each {|line| value, key = line.scan(/(\w*\/\w*):\s*([\W\w*]*)\s*/) 
-                          puts "#{key} => #{value}"
-                         }
-    #puts mime_types
-    
-    
-    routes = {}
-    routes_file = File.open("#{root}/../controllers/routes.txt")
-    routes_file.each {|line| key, value = line.scan(/(\w*\s*[\/\w*]*)\s(\w*#\w*)/).flatten 
-                      routes[key]= value}
-    puts routes
-        
+    mime_types = get_mime_types(root)
+    content = mime_types[File.extname(file)]    
+    routes = get_routes(root)
+            
     wanted = "#{request.request_method} #{request.path.downcase}"
     if routes.has_key? wanted
       dynamic_request_dispatcher(routes[wanted], request, root, mime_types)
@@ -68,6 +43,24 @@ class Clarity
     else
         [404, {"Content-type" => "text/html"}, [File.read("#{root}/doesnotexist.html")]]
     end
+  end
+
+  def get_routes(root)
+    routes = {}
+    routes_file = File.open("#{root}/../controllers/routes.txt")
+    routes_file.each {|line| key, value = line.scan(/(\w*\s*[\/\w*]*)\s(\w*#\w*)/).flatten 
+                      routes[key]= value}
+    routes
+  end
+
+  def get_mime_types(root)
+    mime_types = {}
+    mime_types.default = "text/plain"
+    mime_types_file = File.open("#{root}/../mime_types.txt")
+    mime_types_file.each {|line| value, key = line.scan(/(\w*\/\w*):\s*([\W\w*]*)\b/).flatten
+                          key = key.split(" ")
+                          key.each{|i| mime_types[i] = value}}
+    mime_types
   end
 
 end
