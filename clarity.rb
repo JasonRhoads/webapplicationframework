@@ -15,9 +15,9 @@ class Clarity
     content = mime_types[File.extname(file)]    
     routes = get_routes(root)
             
-    wanted = "#{request.request_method} #{request.path.downcase}"
-    if routes.has_key? wanted
-      dynamic_request_dispatcher(routes[wanted], request, root, mime_types)
+    http_method_and_path = "#{request.request_method} #{request.path.downcase}"
+    if routes.has_key? http_method_and_path
+      dynamic_request_dispatcher(routes[http_method_and_path], request, root, mime_types)
     else
       default_request_dispatcher(request, root, mime_types)
     end
@@ -27,7 +27,11 @@ class Clarity
     *path_names, class_name, method_name = controller_file_name.scan(/(\w+\/|\w+)/).flatten
     file_name = [path_names, class_name, ".rb"].flatten.join
     class_name = class_name.split('_').map{|cn| cn.capitalize}.join
-    file_name = [path_names, class_name, ".rb"].flatten.join if File.exist?(file_name)
+    puts file_name
+    if File.exist?("#{root}/../controllers/#{file_name}") == false
+      file_name = [path_names, class_name, ".rb"].flatten.join
+    end
+    puts file_name
     load "#{root}/../controllers/#{file_name}"
     instance = Object.const_get(class_name).new
     instance_method = instance.method(method_name)
@@ -49,8 +53,11 @@ class Clarity
   def get_routes(root)
     routes = {}
     routes_file = File.open("#{root}/../controllers/routes.txt")
-    routes_file.each {|line| key, value = line.scan(/(\w*\s*[\/\w*]*)\s(\w*#\w*)/).flatten 
-                      routes[key]= value}
+    routes_file.each do |line|
+      http_method_and_path, callback = line.scan(/(\w+\s+(?:\/\s|\/\w+)+)\s*(\w+#\w+)/)
+        .flatten
+      routes[http_method_and_path] = callback
+    end
     routes
   end
 
@@ -58,9 +65,12 @@ class Clarity
     mime_types = {}
     mime_types.default = "text/plain"
     mime_types_file = File.open("#{root}/../mime_types.txt")
-    mime_types_file.each {|line| value, key = line.scan(/(\w*\/\w*):\s*([\W\w*]*)\b/).flatten
-                          key = key.split(" ")
-                          key.each{|i| mime_types[i] = value}}
+    mime_types_file.each do |line| 
+      content, file_extension = line.scan(/([a-z]+\/[a-z]+):\s+((?:\.[a-z]+\s+|\.[a-z]+)+)\b/)
+        .flatten
+      file_extension = file_extension.split(" ")
+      file_extension.each{|i| mime_types[i] = content}
+    end
     mime_types
   end
 
