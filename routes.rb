@@ -1,5 +1,5 @@
 class Routes
-  def get_routes(directory)
+  def self.get_routes(directory)
     routes = {}
     routes_file = File.open("#{directory}/../controllers/routes.txt")
     routes_file.each do |line|
