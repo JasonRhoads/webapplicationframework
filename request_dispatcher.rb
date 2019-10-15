@@ -27,7 +27,7 @@ class RequestDispatcher
     file = @app_root + request.path
     file += "/index.html" if File.directory?(file)
     if File.exist?(file)
-        [200, {"Content-type" => "#{@mime_types[File.extname(file)]}"}, [File.read(file, mode: "rb")]] 
+        [200, {"Content-type" => @mime_types[File.extname(file)]}, [File.read(file, mode: "rb")]] 
     else
         [404, {"Content-type" => "text/html"}, [File.read("#{app_root}/doesnotexist.html")]]
     end
