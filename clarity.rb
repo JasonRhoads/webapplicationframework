@@ -4,6 +4,10 @@ require_relative "routes"
 require_relative "mime_types"
 require_relative "request_dispatcher"
 
+#cookies!! look up: how sent, how transmitted, session cookies, 
+#                   persistant cookie, body, head, fields
+#key  = 'hello world', parse cookie info if can...
+
 class Clarity
    def call env
     request = Rack::Request.new(env)
@@ -15,7 +19,6 @@ class Clarity
     file += "/index.html" if File.directory?(file)
     
     mime_types = MimeTypes.new(app_root)
-    content = mime_types[File.extname(file)]
     routes = Routes.new(app_root)
     request_dispatcher = RequestDispatcher.new(app_root, mime_types, @logger)
     
