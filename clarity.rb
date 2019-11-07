@@ -6,6 +6,9 @@ require_relative "request_dispatcher"
 
 #cookies!! look up: how sent, how transmitted, session cookies, 
 #                   persistant cookie, body, head, fields
+#cukie = request.env["HTTP_COOKIE"]
+#add cookie function to request. parse cookie into hash, read cookie, write cookie, serialize cookie.
+#look into cookie expiration
 #key  = 'hello world', parse cookie info if can...
 
 class Clarity
