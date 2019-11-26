@@ -1,4 +1,6 @@
 require "logger"
+require_relative "cookie"
+
 class RequestDispatcher
   def initialize(app_root, mime_types, logger = Logger.new(STDOUT))
     @logger = logger
@@ -18,7 +20,11 @@ class RequestDispatcher
     load "#{@app_root}/../controllers/#{file_name}"
     instance = Object.const_get(class_name).new
     instance_method = instance.method(method_name)
+
+    $cookie = Cookie.new(request, request.env["HTTP_COOKIE"] || '_clarity_session={}')
     response = instance_method.call(request, @app_root, @mime_types)
+    response[1]["Set-Cookie"] = $cookie.serialize
+
     @logger.debug %{class:#{class_name}, method:#{method_name}, status code:#{response[0]}}
     response
   end
@@ -27,9 +33,12 @@ class RequestDispatcher
     file = @app_root + request.path
     file += "/index.html" if File.directory?(file)
     if File.exist?(file)
-        [200, {"Content-type" => @mime_types[File.extname(file)]}, [File.read(file, mode: "rb")]] 
+      $cookie = Cookie.new(request, request.env["HTTP_COOKIE"] || '_clarity_session={}')
+      response = [200, {"Content-type" => @mime_types[File.extname(file)]}, [File.read(file, mode: "rb")]] 
+      response[1]["Set-Cookie"] = $cookie.serialize
+      response
     else
-        [404, {"Content-type" => "text/html"}, [File.read("#{app_root}/doesnotexist.html")]]
+      [404, {"Content-type" => "text/html"}, [File.read("#{app_root}/doesnotexist.html")]]
     end
   end
 end
