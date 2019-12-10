@@ -6,7 +6,7 @@ class MeTest
     success = File.read("#{directory}/header.txt") + "    
         <main>
         <h1>Mr. Alladin Sir What Will You're Pleasure Be!</h1>
-          <p>#{cookie["Name"]} #{cookie["NomNom"]} #{cookie["YumYum"]}</p>
+          <p>#{cookie["Name"]} #{cookie["NomNom"]}</p>
           <img src=\"/images/Genie_Aladdin.png\" alt=\"Genie of the Lamp\">
         </main>
       </body> 
