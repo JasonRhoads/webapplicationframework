@@ -1,23 +1,32 @@
 require "rack/request"
 require "json"
 require "pry"
+require "blowfish"
+require "base64"
 
 class Cookie < Rack::Request
   def initialize(request, cookie_string = request.env["HTTP_COOKIE"])
+    @key = Blowfish::Key.generate(ENV["CLARITY_KEY"])
     cookie_string.split("=").tap do |c|
       @name = c[0]
       #decrypt cookie here
-      @data = JSON.parse(c[1])
+      begin
+        @data = JSON.parse(Blowfish.decrypt(Base64.decode64(c[1]), @key))
+      rescue
+        @data = JSON.parse(c[1])
+      end
     end
+    
     @meta_data = {"Path" => "/"}
     @has_changed = false
   end
     
   def serialize
-    cookie_string = "#{@name}=#{@data.to_json}; "
-    @meta_data.each {|key, value| cookie_string += "#{key}=#{value}; "}
-    #encrypt cookie here
-    cookie_string 
+    puts "before encryption: #{@data.to_json}"
+    serialized_cookie = "#{@name}=#{Base64.encode64(Blowfish.encrypt(@data.to_json, @key)).chomp}; "
+    @meta_data.each {|key, value| serialized_cookie += "#{key}=#{value}; "}
+    puts "after encryption: #{serialized_cookie}"
+    serialized_cookie
   end
 
   # @cookie["foo"] = "bar"
@@ -71,6 +80,10 @@ class Cookie < Rack::Request
   
   def path=(path)
     @meta_data["Path"] = path
+  end
+
+  def self.create
+    $cookie = Cookie.new(request, request.env["HTTP_COOKIE"] || '_clarity_session={}')
   end
   
 end
