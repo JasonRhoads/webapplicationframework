@@ -14,4 +14,15 @@ RSpec.describe Cookie do
     expect(cookie1.serialize).to eq "#{cookie2.serialize}"
   end
 
+  it "validates cookie serialization" do  
+    cookie1 = Cookie.new("request", '_clarity_session={}')
+    
+    cookie1["Name"] = "Max"
+    cookie1["NomNom"] = "Cookie"
+
+    cookie2 = Cookie.new("request", cookie1.serialize)
+
+    expect(cookie1.serialize).to eq "#{cookie2.serialize}"
+  end
+
 end
