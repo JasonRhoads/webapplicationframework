@@ -8,9 +8,6 @@ class RequestDispatcher
 
     @app_root = app_root
     @mime_types = mime_types
-
-    Cookie.create(request, request.env["HTTP_COOKIE"] || '_clarity_session={}')
-
   end
 
   def dynamic_request_dispatcher(controller_file_name, request)
@@ -24,6 +21,7 @@ class RequestDispatcher
     instance = Object.const_get(class_name).new
     instance_method = instance.method(method_name)
 
+    $cookie = Cookie.new(request, request.env["HTTP_COOKIE"] || '_clarity_session={}')
     response = instance_method.call(request, @app_root, @mime_types)
     response[1]["Set-Cookie"] = $cookie.serialize
 
@@ -35,6 +33,7 @@ class RequestDispatcher
     file = @app_root + request.path
     file += "/index.html" if File.directory?(file)
     if File.exist?(file)
+      $cookie = Cookie.new(request, request.env["HTTP_COOKIE"] || '_clarity_session={}')
       response = [200, {"Content-type" => @mime_types[File.extname(file)]}, [File.read(file, mode: "rb")]] 
       response[1]["Set-Cookie"] = $cookie.serialize
       response
