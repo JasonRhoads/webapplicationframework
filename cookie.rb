@@ -22,10 +22,10 @@ class Cookie < Rack::Request
   end
     
   def serialize
-    puts "before encryption: #{@data.to_json}"
+    #puts "before encryption: #{@data.to_json}"
     serialized_cookie = "#{@name}=#{Base64.encode64(Blowfish.encrypt(@data.to_json, @key)).chomp}; "
     @meta_data.each {|key, value| serialized_cookie += "#{key}=#{value}; "}
-    puts "after encryption: #{serialized_cookie}"
+    #puts "after encryption: #{serialized_cookie}"
     serialized_cookie
   end
 
