@@ -20,7 +20,11 @@ class Clarity
     
     http_method_and_path = "#{request.request_method} #{request.path.downcase}"
     if routes.has_key?(http_method_and_path)
-      request_dispatcher.dynamic_request_dispatcher(routes[http_method_and_path], request)
+      begin
+        request_dispatcher.dynamic_request_dispatcher(routes[http_method_and_path], request)
+      rescue => exception
+        request_dispatcher.default_request_dispatcher(request)                
+      end
     else
       request_dispatcher.default_request_dispatcher(request)
     end
