@@ -1,2 +1,4 @@
 "POST /login login#login"
 "GET /me me_test#me"
+"GT /me me_test#m"
+"GET /m me_test#m"
