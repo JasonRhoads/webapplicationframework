@@ -32,7 +32,7 @@ RSpec.describe Routes do
     expect(routes["GET /me"]).to eq "me_test#me"
   end
 
-  it "bad http request and path call class and funciton" do
-    expect(routes["GET /m"]).to eq "me_test#m"
+  it  "bad http request and path call class and funciton" do
+    expect(routes["GET /m"]).to eq "me_tet#m"
   end
 end
