@@ -4,6 +4,11 @@ require_relative "routes"
 require_relative "mime_types"
 require_relative "request_dispatcher"
 
+#active record, sequel, datamapper Object-Relational Mappers (ORMs), read about and install and play with sqlite
+# tell Max which ORM you think you should integrate and why and create
+# a database with a users table with first, last, email, phone, bcrypt enrypted passwords
+# populate with 15 entries
+
 class Clarity
    def call env
     request = Rack::Request.new(env)
@@ -22,8 +27,10 @@ class Clarity
     if routes.has_key?(http_method_and_path)
       begin
         request_dispatcher.dynamic_request_dispatcher(routes[http_method_and_path], request)
-      rescue => exception
-        request_dispatcher.default_request_dispatcher(request)                
+      rescue LoadError, NameError => e
+        error_type = e.is_a?(LoadError) ? "load class" : "find method"
+        @logger.error "#{http_method_and_path}: #{e.message}: failed to #{error_type}, check routes.txt"
+        [404, {"Content-type" => "text/html"}, [File.read("#{app_root}/doesnotexist.html")]]                
       end
     else
       request_dispatcher.default_request_dispatcher(request)
