@@ -4,10 +4,6 @@ require_relative "routes"
 require_relative "mime_types"
 require_relative "request_dispatcher"
 
-#active record, sequel, datamapper Object-Relational Mappers (ORMs), read about and install and play with sqlite
-# tell Max which ORM you think you should integrate and why and create
-# a database with a users table with first, last, email, phone, bcrypt enrypted passwords
-# populate with 15 entries
 
 class Clarity
    def call env
