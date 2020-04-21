@@ -4,6 +4,8 @@ require_relative "routes"
 require_relative "mime_types"
 require_relative "request_dispatcher"
 
+#display encounters as table
+#database wrapper class
 
 class Clarity
    def call env
