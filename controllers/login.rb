@@ -2,27 +2,36 @@ require_relative '..\cookie'
 require 'sequel'
 require 'sqlite3'
 require "bcrypt"
-require 'pry'
 
 class Login
   def login(request, directory, mime_types)
     db = Sequel.connect('sqlite://database.db')
 
-    password = db['select password from users where first_name = ?', request.params["username"]].first[:password]
-    username = db['select first_name from users where first_name = ?', request.params["username"]].first[:first_name]
+    password = db['select password from users where username = ?', request.params["username"]].first[:password]
+    username = db['select username from users where username = ?', request.params["username"]].first[:username]
 
     $cookie["Name"] = username
     $cookie["NomNom"] = "Choco"
-    $cookie.max_age = 100000
-
+    $cookie.max_age = 100000  
+    $cookie["Id"] = db['SELECT id FROM users WHERE username = ?', username].first[:id]
     puts username
     puts password
-    puts request.params["password"]
+    puts $cookie["Id"]
+    
     
     hashed_password = BCrypt::Password.new(password)
         
     if ((username == request.params["username"]) && (hashed_password == request.params["password"]))
-      [200, {"Content-type" => "text/html", "class_name" => "Login", "method_name" => "login"}, [File.read("#{directory}/success.html")]]  
+      load "#{directory}/../controllers/account.rb"
+    instance = Object.const_get("Account").new
+    instance_method = instance.method("account")
+
+    response = instance_method.call(request, directory, mime_types)
+    response[1]["Set-Cookie"] = $cookie.serialize
+    
+    response
+      
+      #[200, {"Content-type" => "text/html", "class_name" => "Login", "method_name" => "login"}, [File.read("#{directory}/success.html")]]  
     else  #'_clarity_session={"NomNom": "Hello World", "YumYum": "cookie2"}; Max-Age=100000; Path=\/me;'
       [401, {"Content-type" => "text/html", "class_name" => "Login", "method_name" => "login"}, [File.read("#{directory}/failed.html")]]  
     end
