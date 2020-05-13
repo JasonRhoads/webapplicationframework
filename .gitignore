@@ -1,4 +1,4 @@
 vendor/bundle
 *.db
 *.csv
-database.rb
+database_seeds.rb
