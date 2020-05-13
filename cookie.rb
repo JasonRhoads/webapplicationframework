@@ -23,9 +23,10 @@ class Cookie < Rack::Request
     
   def serialize
     #puts "before encryption: #{@data.to_json}"
-    serialized_cookie = "#{@name}=#{Base64.encode64(Blowfish.encrypt(@data.to_json, @key)).chomp}; "
+    serialized_cookie = "#{@name}=#{Base64.strict_encode64(Blowfish.encrypt(@data.to_json, @key)).chomp}; "
+    $cookie.max_age = 1000000
     @meta_data.each {|key, value| serialized_cookie += "#{key}=#{value}; "}
-    #puts "after encryption: #{serialized_cookie}"
+    Clarity.logger.debug "after encryption: #{serialized_cookie}"
     serialized_cookie
   end
 
