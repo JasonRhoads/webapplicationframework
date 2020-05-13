@@ -1,10 +1,10 @@
 require "logger"
 require_relative "cookie"
+require "pry"
 
 class RequestDispatcher
-  def initialize(app_root, mime_types, logger = Logger.new(STDOUT))
-    @logger = logger
-    @logger.level = Logger::DEBUG
+  def initialize(app_root, mime_types)
+    @logger = Clarity.logger
 
     @app_root = app_root
     @mime_types = mime_types
