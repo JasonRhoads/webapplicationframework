@@ -1,13 +1,14 @@
 require_relative '..\cookie'
-require_relative '..\database_wrapper'
+require_relative '..\database'
 require 'sequel'
 require 'sqlite3'
 
 class Account
   def account(request, directory, mime_types)
     	    
-  db = DatabaseWrapper.dbConnect()
-	
+  db = Database.db_connect()
+  puts "account class"
+  puts $cookie
 	id = $cookie["Id"]
 	user = db['SELECT * FROM users WHERE id = ?', id].first
   

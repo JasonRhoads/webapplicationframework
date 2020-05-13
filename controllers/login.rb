@@ -1,23 +1,25 @@
 require_relative '..\cookie'
+require_relative '..\database'
 require 'sequel'
 require 'sqlite3'
-require "bcrypt"
+require 'bcrypt'
 
 class Login
   def login(request, directory, mime_types)
-    db = Sequel.connect('sqlite://database.db')
+    db = Database.db_connect()
 
     password = db['select password from users where username = ?', request.params["username"]].first[:password]
     username = db['select username from users where username = ?', request.params["username"]].first[:username]
 
     $cookie["Name"] = username
     $cookie["NomNom"] = "Choco"
-    $cookie.max_age = 100000  
+    $cookie.max_age = 1000000  
     $cookie["Id"] = db['SELECT id FROM users WHERE username = ?', username].first[:id]
+    puts "login class"
     puts username
     puts password
     puts $cookie["Id"]
-    
+    puts $cookie
     
     hashed_password = BCrypt::Password.new(password)
         
