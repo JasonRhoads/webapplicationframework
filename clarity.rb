@@ -4,22 +4,34 @@ require_relative "routes"
 require_relative "mime_types"
 require_relative "request_dispatcher"
 
-#display encounters as table
-#database wrapper class
+#cucumber, gherkin, web driver sellieium acceptance testing
+#chrome driver
 
 class Clarity
-   def call env
+  @@logger = nil
+
+  def self.logger
+    @@logger
+  endm
+  
+  def self.logger=(logger)
+    @@logger = logger
+  end
+
+  def call env
     request = Rack::Request.new(env)
-    @logger = Logger.new(STDOUT)
-    @logger.level = Logger::DEBUG
     
+    logger = Logger.new(STDOUT)
+    logger.level = Logger::DEBUG
+    Clarity.logger = logger
+
     app_root = ENV['CLARITY_DIRECTORY'] ? ENV['CLARITY_DIRECTORY'] : File.expand_path(File.dirname(__FILE__)) + "/public"    
     file = app_root + request.path
     file += "/index.html" if File.directory?(file)
     
     mime_types = MimeTypes.new(app_root)
     routes = Routes.new(app_root)
-    request_dispatcher = RequestDispatcher.new(app_root, mime_types, @logger)
+    request_dispatcher = RequestDispatcher.new(app_root, mime_types)
     
     http_method_and_path = "#{request.request_method} #{request.path.downcase}"
     if routes.has_key?(http_method_and_path)
